@@ -1,16 +1,13 @@
 #include <iostream>
 using namespace std;
 
-// Funcion que crea la matriz dinamicamente con punteros
 char** crearMatriz(int ancho, int alto) {
-    // Reservar memoria para las filas
     char** matriz = new char*[alto];
     for (int i = 0; i < alto; i++) {
-        matriz[i] = new char[ancho + 2]; // +2 por las columnas de limite
-        // Inicializar con '.'
+        matriz[i] = new char[ancho + 2];
         for (int j = 0; j < ancho + 2; j++) {
             if (j == 0 || j == ancho + 1) {
-                matriz[i][j] = '|'; // columnas de limite
+                matriz[i][j] = '|';
             } else {
                 matriz[i][j] = '.';
             }
@@ -19,7 +16,6 @@ char** crearMatriz(int ancho, int alto) {
     return matriz;
 }
 
-// Funcion para imprimir la matriz
 void imprimirMatriz(char** matriz, int ancho, int alto) {
     for (int i = 0; i < alto; i++) {
         for (int j = 0; j < ancho + 2; j++) {
@@ -29,7 +25,6 @@ void imprimirMatriz(char** matriz, int ancho, int alto) {
     }
 }
 
-// Funcion para liberar la memoria
 void liberarMatriz(char** matriz, int alto) {
     for (int i = 0; i < alto; i++) {
         delete[] matriz[i];
@@ -40,22 +35,23 @@ void liberarMatriz(char** matriz, int alto) {
 int main() {
     int ancho, alto;
 
-    cout << "Ingresa el ancho de la matriz (minimo 8 y multiplo de 8): ";
-    cin >> ancho;
+    // Bucle para validar ancho
+    do {
+        cout << "Ingresa el ancho de la matriz (minimo 8 y multiplo de 8): ";
+        cin >> ancho;
+        if (ancho < 8 || ancho % 8 != 0) {
+            cout << "Error: el ancho debe ser al menos 8 y multiplo de 8." << endl;
+        }
+    } while (ancho < 8 || ancho % 8 != 0);
 
-    cout << "Ingresa el alto de la matriz (minimo 8): ";
-    cin >> alto;
-
-    // Validaciones
-    if (ancho < 8 || ancho % 8 != 0) {
-        cout << "Error: el ancho debe ser al menos 8 y multiplo de 8." << endl;
-        return 1;
-    }
-
-    if (alto < 8) {
-        cout << "Error: el alto debe ser al menos 8." << endl;
-        return 1;
-    }
+    // Bucle para validar alto
+    do {
+        cout << "Ingresa el alto de la matriz (minimo 8): ";
+        cin >> alto;
+        if (alto < 8) {
+            cout << "Error: el alto debe ser al menos 8." << endl;
+        }
+    } while (alto < 8);
 
     // Crear matriz
     char** matriz = crearMatriz(ancho, alto);
@@ -63,7 +59,6 @@ int main() {
     cout << "Matriz creada de " << alto << " filas y " << ancho + 2 << " columnas (con limites):" << endl;
     imprimirMatriz(matriz, ancho, alto);
 
-    // Liberar memoria hola
     liberarMatriz(matriz, alto);
 
     return 0;
