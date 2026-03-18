@@ -63,7 +63,7 @@ int main() {
     cout << "Matriz creada de " << alto << " filas y " << ancho + 2 << " columnas (con limites):" << endl;
     imprimirMatriz(matriz, ancho, alto);
 
-    // Liberar memoria
+    // Liberar memoria hola
     liberarMatriz(matriz, alto);
 
     return 0;
