@@ -5,7 +5,11 @@ project(Trabajo_1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(Trabajo_1 main.cpp)
+add_executable(Trabajo_1 main.cpp
+    Matriz.cpp
+    Matriz.h
+    Piezas.h
+    Piezas.cpp)
 
 include(GNUInstallDirs)
 install(TARGETS Trabajo_1
