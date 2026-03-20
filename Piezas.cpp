@@ -95,14 +95,18 @@ int** Figura1(int filas , int columnas ) {
         }
     }
 
-    // Fila 1: 1110
-    matriz[1][0] = 1;
-    matriz[1][1] = 1;
-    matriz[1][2] = 1;
-    matriz[1][3] = 0; // explícito, aunque ya está en 0
+    if (filas > 1 && columnas > 2) {
+        matriz[1][0] = 1;
+        matriz[1][1] = 1;
+        matriz[1][2] = 1;
+    }
+    if (filas > 1 && columnas > 3) {
+        matriz[1][3] = 0;
+    }
+    if (filas > 2 && columnas > 2) {
+        matriz[2][2] = 1;
+    }
 
-    // Fila 2: 0010 → un 1 en la tercera columna (índice 2)
-    matriz[2][2] = 1;
 
     return matriz;
 }

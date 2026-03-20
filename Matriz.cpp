@@ -1,7 +1,6 @@
 #include "Matriz.h"
-#include <iostream>
 #include "Piezas.h"
-using namespace std;
+
 
 int** crearMatriz(int ancho, int alto) {
     // Reservar memoria para alto filas
@@ -38,8 +37,7 @@ int** crearMatriz(int ancho, int alto) {
     }
 }*/
 
-int** insertarPieza(int** tablero, int altoTablero, int anchoTablero,
-                    int altoPieza, int anchoPieza, int valorFigura) {
+int** insertarPieza(int** tablero, int altoTablero, int anchoTablero, int altoPieza, int anchoPieza, int valorFigura) {
     int columnasTablero = anchoTablero + 2;
     int espacio=0;
 
@@ -121,6 +119,22 @@ int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
             }
         }
     }
+    if (accion == 3) {
+        bool puedeBajar = true;
+        for (int i = 0; i < altoTablero; i++)
+            for (int j = 0; j < columnasTablero; j++)
+                if (tablero[i][j] == 1 && i >= altoTablero - 1)
+                    puedeBajar = false;
+
+        for (int i = 0; i < altoTablero; i++)
+            for (int j = 0; j < columnasTablero; j++)
+                if (tablero[i][j] == 1)
+                    nuevoTablero[puedeBajar ? i + 1 : i][j] = 1;
+
+        for (int i = 0; i < altoTablero; i++) delete[] tablero[i];
+        delete[] tablero;
+        return nuevoTablero;
+    }
 
     // Reubicar la pieza según la acción
     for (int i = 0; i < altoTablero; i++) {
@@ -131,7 +145,41 @@ int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
                 } else if (accion == 2 && j < columnasTablero-2 && puedeMover) { // derecha
                     nuevoTablero[i][j+1] = 1;
                 } else if (accion == 3 && i < altoTablero-1) { // abajo
-                    nuevoTablero[i+1][j] = 1;
+                    // Primero verificar si alguna celda de la figura ya está en el fondo
+                    bool puedeBajar = true;
+
+                    // Verificar si alguna celda de la figura está en el fondo
+                    for (int i = 0; i < altoTablero; i++) {
+                        for (int j = 0; j < columnasTablero; j++) {
+                            if (tablero[i][j] == 1 && i >= altoTablero - 1) {
+                                puedeBajar = false;
+                            }
+                        }
+                    }
+
+                    if (puedeBajar) {
+                        // PASADA 1: borrar todas las posiciones actuales de la figura
+                        for (int i = 0; i < altoTablero; i++) {
+                            for (int j = 0; j < columnasTablero; j++) {
+                                if (tablero[i][j] == 1) {
+                                    nuevoTablero[i][j] = 0;
+                                }
+                            }
+                        }
+
+                        // PASADA 2: colocar la figura una fila más abajo
+                        for (int i = 0; i < altoTablero; i++) {
+                            for (int j = 0; j < columnasTablero; j++) {
+                                if (tablero[i][j] == 1) {
+                                    nuevoTablero[i + 1][j] = 1;
+                                }
+                            }
+                        }
+                    }
+
+
+
+
                 } else if (accion == 4) {
                     // 1. Detectar límites de la pieza
                     int minI = altoTablero, maxI = -1, minJ = columnasTablero, maxJ = -1;
@@ -198,7 +246,10 @@ int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
                         for (int i = 0; i < anchoPieza; i++) {
                             for (int j = 0; j < altoPieza; j++) {
                                 if (rotada[i][j] == 1) {
-                                    nuevoTablero[minI + i][minJ + j] = 1;
+                                    int ti = minI + i;
+                                    int tj = minJ + j;
+                                    if (ti >= 0 && ti < altoTablero && tj >= 0 && tj < columnasTablero)
+                                        nuevoTablero[ti][tj] = 1;
                                 }
                             }
                         }
@@ -237,12 +288,60 @@ int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
 }
 
 
+bool compararMatrices(int** tablero, int** tableroCopia, int alto, int ancho) {
+    for (int i = 0; i < alto; i++)
+        for (int j = 0; j < ancho; j++)
+            if (tablero[i][j] == 1 && tableroCopia[i][j] == 1)
+                return false;
+    return true;
+}
 
 
+bool puedeBajar(int** tablero, int** copia, int altoTablero, int columnasTablero) {
+    for (int j = 0; j < columnasTablero; j++) {
+        for (int i = altoTablero - 1; i >= 0; i--) {
+            if (tablero[i][j] == 1) {
+                if (i >= altoTablero - 1)
+                    return false;
+                // colisión con pieza estática en copiaMatriz
+                if (copia[i + 1][j] == 1)
+                    return false;
+                break;
+            }
+        }
+    }
+    return true;
+}
 
+void eliminarFilasLlenas(int** tablero, int altoTablero, int columnasTablero) {
+    for (int i = altoTablero - 1; i >= 0; i--) {
+        bool filaLlena = true;
+        for (int j = 0; j < columnasTablero; j++) {
+            if (tablero[i][j] != 1 && tablero[i][j] != 3) {
+                filaLlena = false;
+                break;
+            }
+        }
 
+        if (filaLlena) {
+            // bajar todas las filas de arriba una posicion
+            for (int k = i; k > 0; k--)
+                for (int j = 0; j < columnasTablero; j++)
+                    tablero[k][j] = tablero[k-1][j];
 
+            // nueva fila vacia en la parte superior
+            for (int j = 0; j < columnasTablero; j++) {
+                if (j == 0 || j == columnasTablero - 1)
+                    tablero[0][j] = 3;
+                else
+                    tablero[0][j] = 0;
+            }
 
+            // revisar la misma fila de nuevo
+            i++;
+        }
+    }
+}
 
 
 

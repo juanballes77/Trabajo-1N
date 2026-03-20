@@ -5,11 +5,8 @@ using namespace std;
 
 int main() {
     int ancho, alto, accion;
+    bool condicion=false;
     char entrada;
-
-
-
-
     do {
         cout << "Ingresa el ancho del tablero: ";
         cin >> ancho;
@@ -49,12 +46,11 @@ int main() {
 
     cout<<endl;
     int** matriz = crearMatriz(ancho, alto);
-    int** copiaMatriz=matriz;
-
-
     matriz = insertarPieza(matriz, alto, ancho, 4, 4, 1);
 
-    do{
+    int** copiaMatriz = crearMatriz(ancho, alto);
+
+    while(true){
 
 
 
@@ -91,24 +87,54 @@ int main() {
         }
 
 
+        if(!puedeBajar(matriz, copiaMatriz, alto, ancho + 2)){
+            cout<<"hola"<<endl;
+
+            for (int i = 0; i < alto; i++)
+                for (int j = 0; j < ancho + 2; j++)
+                    if (matriz[i][j] == 1)
+                        copiaMatriz[i][j] = 1;
+
+            for (int i = 0; i < alto; i++) {
+                for (int j = 0; j < ancho + 2; j++) {
+                    if (copiaMatriz[i][j] == 0) cout << ".";
+                    else if (copiaMatriz[i][j] == 3) cout << "|";
+                    else if (copiaMatriz[i][j] == 1) cout << "#";
+                }
+                cout << endl;
+            }
+            cout << endl;
+            eliminarFilasLlenas(copiaMatriz, alto, ancho + 2);
+
+            for (int i = 0; i < alto; i++) {
+                for (int j = 0; j < ancho + 2; j++) {
+                    if (copiaMatriz[i][j] == 0) cout << ".";
+                    else if (copiaMatriz[i][j] == 3) cout << "|";
+                    else if (copiaMatriz[i][j] == 1) cout << "#";
+                }
+                cout << endl;
+            }
+            cout << endl;
+
+            liberarMatriz(matriz, alto);
+            matriz = crearMatriz(ancho, alto);
+            matriz = insertarPieza(matriz, alto, ancho, 4, 4, 1);
+
+
+
+        }
+
         if(accion==5){
+            liberarMatriz(copiaMatriz, alto);
+            liberarMatriz(matriz, alto);
             break;
         }
 
 
 
 
-    }while(true);
+    }
 
 
-
-
-
-
-
-
-
-
-    liberarMatriz(matriz, alto);
     return 0;
 }
