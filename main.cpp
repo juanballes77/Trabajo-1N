@@ -1,9 +1,14 @@
 #include <iostream>
 #include "Matriz.h"
 #include "Piezas.h"
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 int main() {
+
+    srand(time(0));
+
     int ancho, alto, accion;
     bool condicion=false;
     char entrada;
@@ -56,13 +61,12 @@ int main() {
 
         for (int i = 0; i < alto; i++) {
             for (int j = 0; j < ancho + 2; j++) {
-                if (matriz[i][j] == 0) cout << ".";
-                else if (matriz[i][j] == 3) cout << "|";
-                else if (matriz[i][j] == 1) cout << "#";
+                if (matriz[i][j] == 1 || copiaMatriz[i][j] == 1) cout << "#";
+                else if (copiaMatriz[i][j] == 3) cout << "|";
+                else cout << ".";
             }
             cout << endl;
         }
-
         accion=pedirOpcion();
         switch (accion) {
         case 1:
@@ -87,6 +91,7 @@ int main() {
         }
 
 
+
         if(!puedeBajar(matriz, copiaMatriz, alto, ancho + 2)){
             cout<<"hola"<<endl;
 
@@ -95,30 +100,16 @@ int main() {
                     if (matriz[i][j] == 1)
                         copiaMatriz[i][j] = 1;
 
-            for (int i = 0; i < alto; i++) {
-                for (int j = 0; j < ancho + 2; j++) {
-                    if (copiaMatriz[i][j] == 0) cout << ".";
-                    else if (copiaMatriz[i][j] == 3) cout << "|";
-                    else if (copiaMatriz[i][j] == 1) cout << "#";
-                }
-                cout << endl;
-            }
-            cout << endl;
+
             eliminarFilasLlenas(copiaMatriz, alto, ancho + 2);
 
-            for (int i = 0; i < alto; i++) {
-                for (int j = 0; j < ancho + 2; j++) {
-                    if (copiaMatriz[i][j] == 0) cout << ".";
-                    else if (copiaMatriz[i][j] == 3) cout << "|";
-                    else if (copiaMatriz[i][j] == 1) cout << "#";
-                }
-                cout << endl;
-            }
-            cout << endl;
+
 
             liberarMatriz(matriz, alto);
             matriz = crearMatriz(ancho, alto);
             matriz = insertarPieza(matriz, alto, ancho, 4, 4, 1);
+            verificarGameOver(matriz, copiaMatriz, alto, ancho);
+
 
 
 

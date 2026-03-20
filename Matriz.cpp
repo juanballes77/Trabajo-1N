@@ -1,5 +1,10 @@
 #include "Matriz.h"
+#include <cstdlib>
 #include "Piezas.h"
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
 
 
 int** crearMatriz(int ancho, int alto) {
@@ -25,24 +30,14 @@ int** crearMatriz(int ancho, int alto) {
 }
 
 
-/*void imprimirMatriz(int** matriz, int filas, int columnas) {
 
-
-    for (int i = 0; i < filas; i++) {
-        for (int j = 0; j < columnas + 2; j++) {
-            if (matriz[i][j] == 0) cout << ".";
-            else if (matriz[i][j] == 3) cout << "|";
-        }
-        cout << endl;
-    }
-}*/
 
 int** insertarPieza(int** tablero, int altoTablero, int anchoTablero, int altoPieza, int anchoPieza, int valorFigura) {
     int columnasTablero = anchoTablero + 2;
     int espacio=0;
 
     // Generar la pieza automáticamente con Cuadrado (o cualquier otra función)
-    int** pieza = Figura1(altoPieza, anchoPieza);
+    int** pieza = generarPiezaAleatoria();
 
     // Vertical: siempre arriba
     int inicioFila = 0;
@@ -344,6 +339,49 @@ void eliminarFilasLlenas(int** tablero, int altoTablero, int columnasTablero) {
 }
 
 
+void verificarGameOver(int** matriz, int** copia, int alto, int ancho) {
+    for (int i = 0; i < alto; i++)
+        for (int j = 0; j < ancho + 2; j++)
+            if (matriz[i][j] == 1 && copia[i][j] == 1) {
+                cout << "Game Over" << endl;
+                exit(0);
+            }
+}
+
+
+int** rotarPieza(int** pieza, int filas, int columnas) {
+    int** rotada = new int*[columnas];
+    for (int i = 0; i < columnas; i++) {
+        rotada[i] = new int[filas];
+        for (int j = 0; j < filas; j++)
+            rotada[i][j] = pieza[filas - 1 - j][i];
+    }
+    for (int i = 0; i < filas; i++) delete[] pieza[i];
+    delete[] pieza;
+    return rotada;
+}
+
+int** generarPiezaAleatoria() {
+    srand(time(0));
+    int figura = rand() % 7 + 1; // del 1 al 5
+    int rotaciones = rand() % 5;  // del 0 al 4
+
+    int** pieza;
+    switch (figura) {
+    case 1: pieza = Figura1(4, 4); break;
+    case 2: pieza = Figura2(4, 4); break;
+    case 3: pieza = Figura3(4, 4); break;
+    case 4: pieza = Figura4(4, 4); break;
+    case 5: pieza = Figura5(4, 4); break;
+    case 6: pieza = Cuadrado(4, 4); break;
+    case 7: pieza = Linea(4, 4); break;
+    }
+
+    for (int r = 0; r < rotaciones; r++)
+        pieza = rotarPieza(pieza, 4, 4);
+
+    return pieza;
+}
 
 
 

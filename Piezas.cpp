@@ -111,3 +111,58 @@ int** Figura1(int filas , int columnas ) {
     return matriz;
 }
 
+int** Figura2(int filas, int columnas) {
+    int** matriz = new int*[filas];
+    for (int i = 0; i < filas; i++) {
+        matriz[i] = new int[columnas];
+        for (int j = 0; j < columnas; j++)
+            matriz[i][j] = 0;
+    }
+    // 1110
+    // 1000
+    matriz[1][0] = 1; matriz[1][1] = 1; matriz[1][2] = 1;
+    matriz[2][0] = 1;
+    return matriz;
+}
+
+int** Figura3(int filas, int columnas) {
+    int** matriz = new int*[filas];
+    for (int i = 0; i < filas; i++) {
+        matriz[i] = new int[columnas];
+        for (int j = 0; j < columnas; j++)
+            matriz[i][j] = 0;
+    }
+    // 0110
+    // 1100
+    matriz[1][1] = 1; matriz[1][2] = 1;
+    matriz[2][0] = 1; matriz[2][1] = 1;
+    return matriz;
+}
+
+int** Figura4(int filas, int columnas) {
+    int** matriz = new int*[filas];
+    for (int i = 0; i < filas; i++) {
+        matriz[i] = new int[columnas];
+        for (int j = 0; j < columnas; j++)
+            matriz[i][j] = 0;
+    }
+    // 1100
+    // 0110
+    matriz[1][0] = 1; matriz[1][1] = 1;
+    matriz[2][1] = 1; matriz[2][2] = 1;
+    return matriz;
+}
+
+int** Figura5(int filas, int columnas) {
+    int** matriz = new int*[filas];
+    for (int i = 0; i < filas; i++) {
+        matriz[i] = new int[columnas];
+        for (int j = 0; j < columnas; j++)
+            matriz[i][j] = 0;
+    }
+    // 1110
+    // 0100
+    matriz[1][0] = 1; matriz[1][1] = 1; matriz[1][2] = 1;
+    matriz[2][1] = 1;
+    return matriz;
+}
