@@ -73,53 +73,30 @@ int** insertarPieza(int** tablero, int altoTablero, int anchoTablero, int altoPi
     return tablero;
 }
 
-int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
+int** moverPieza(int** tablero, int** copia, int altoTablero, int anchoTablero, int accion) {
     int columnasTablero = anchoTablero + 2;
 
-    // Crear una copia temporal del tablero con todo igual
     int** nuevoTablero = new int*[altoTablero];
     for (int i = 0; i < altoTablero; i++) {
         nuevoTablero[i] = new int[columnasTablero];
-        for (int j = 0; j < columnasTablero; j++) {
+        for (int j = 0; j < columnasTablero; j++)
             nuevoTablero[i][j] = tablero[i][j];
-        }
     }
 
-    // Limpiar las posiciones actuales de la pieza (los 1)
-    for (int i = 0; i < altoTablero; i++) {
-        for (int j = 0; j < columnasTablero; j++) {
-            if (tablero[i][j] == 1) {
-                nuevoTablero[i][j] = 0; // espacio vacío
-            }
-        }
-    }
+    for (int i = 0; i < altoTablero; i++)
+        for (int j = 0; j < columnasTablero; j++)
+            if (tablero[i][j] == 1)
+                nuevoTablero[i][j] = 0;
 
-    bool puedeMover = true;
-
-    // Antes de mover, comprobamos si hay borde lateral
-    if (accion == 1) { // izquierda
-        for (int i = 0; i < altoTablero; i++) {
-            for (int j = 0; j < columnasTablero; j++) {
-                if (tablero[i][j] == 1 && tablero[i][j-1] == 3) {
-                    puedeMover = false;
-                }
-            }
-        }
-    } else if (accion == 2) { // derecha
-        for (int i = 0; i < altoTablero; i++) {
-            for (int j = 0; j < columnasTablero; j++) {
-                if (tablero[i][j] == 1 && tablero[i][j+1] == 3) {
-                    puedeMover = false;
-                }
-            }
-        }
-    }
+    // ── ACCION 3: BAJAR ─────────────────────────────────────────────
     if (accion == 3) {
         bool puedeBajar = true;
         for (int i = 0; i < altoTablero; i++)
             for (int j = 0; j < columnasTablero; j++)
-                if (tablero[i][j] == 1 && i >= altoTablero - 1)
-                    puedeBajar = false;
+                if (tablero[i][j] == 1) {
+                    if (i >= altoTablero - 1) puedeBajar = false;
+                    else if (copia[i + 1][j] == 1) puedeBajar = false;
+                }
 
         for (int i = 0; i < altoTablero; i++)
             for (int j = 0; j < columnasTablero; j++)
@@ -131,154 +108,106 @@ int** moverPieza(int** tablero, int altoTablero, int anchoTablero, int accion) {
         return nuevoTablero;
     }
 
-    // Reubicar la pieza según la acción
-    for (int i = 0; i < altoTablero; i++) {
-        for (int j = 0; j < columnasTablero; j++) {
-            if (tablero[i][j] == 1) {
-                if (accion == 1 && j > 1 && puedeMover) { // izquierda
-                    nuevoTablero[i][j-1] = 1;
-                } else if (accion == 2 && j < columnasTablero-2 && puedeMover) { // derecha
-                    nuevoTablero[i][j+1] = 1;
-                } else if (accion == 3 && i < altoTablero-1) { // abajo
-                    // Primero verificar si alguna celda de la figura ya está en el fondo
-                    bool puedeBajar = true;
-
-                    // Verificar si alguna celda de la figura está en el fondo
-                    for (int i = 0; i < altoTablero; i++) {
-                        for (int j = 0; j < columnasTablero; j++) {
-                            if (tablero[i][j] == 1 && i >= altoTablero - 1) {
-                                puedeBajar = false;
-                            }
-                        }
-                    }
-
-                    if (puedeBajar) {
-                        // PASADA 1: borrar todas las posiciones actuales de la figura
-                        for (int i = 0; i < altoTablero; i++) {
-                            for (int j = 0; j < columnasTablero; j++) {
-                                if (tablero[i][j] == 1) {
-                                    nuevoTablero[i][j] = 0;
-                                }
-                            }
-                        }
-
-                        // PASADA 2: colocar la figura una fila más abajo
-                        for (int i = 0; i < altoTablero; i++) {
-                            for (int j = 0; j < columnasTablero; j++) {
-                                if (tablero[i][j] == 1) {
-                                    nuevoTablero[i + 1][j] = 1;
-                                }
-                            }
-                        }
-                    }
-
-
-
-
-                } else if (accion == 4) {
-                    // 1. Detectar límites de la pieza
-                    int minI = altoTablero, maxI = -1, minJ = columnasTablero, maxJ = -1;
-                    for (int i = 0; i < altoTablero; i++) {
-                        for (int j = 0; j < columnasTablero; j++) {
-                            if (tablero[i][j] == 1) {
-                                if (i < minI) minI = i;
-                                if (i > maxI) maxI = i;
-                                if (j < minJ) minJ = j;
-                                if (j > maxJ) maxJ = j;
-                            }
-                        }
-                    }
-
-                    int altoPieza = maxI - minI + 1;
-                    int anchoPieza = maxJ - minJ + 1;
-
-                    // 2. Extraer submatriz
-                    int** pieza = new int*[altoPieza];
-                    for (int i = 0; i < altoPieza; i++) {
-                        pieza[i] = new int[anchoPieza];
-                        for (int j = 0; j < anchoPieza; j++) {
-                            pieza[i][j] = tablero[minI + i][minJ + j];
-                        }
-                    }
-
-                    // 3. Simular rotación
-                    int** rotada = new int*[anchoPieza];
-                    for (int i = 0; i < anchoPieza; i++) {
-                        rotada[i] = new int[altoPieza];
-                        for (int j = 0; j < altoPieza; j++) {
-                            rotada[i][j] = pieza[altoPieza - 1 - j][i];
-                        }
-                    }
-
-                    // 4. Comprobar colisiones
-                    bool puedeRotar = true;
-                    for (int i = 0; i < anchoPieza; i++) {
-                        for (int j = 0; j < altoPieza; j++) {
-                            if (rotada[i][j] == 1) {
-                                int tableroI = minI + i;
-                                int tableroJ = minJ + j;
-
-                                // fuera de límites verticales
-                                if (tableroI >= altoTablero) {
-                                    puedeRotar = false;
-                                }
-                                // choque contra borde lateral
-                                else if (tablero[tableroI][tableroJ] == 3) {
-                                    puedeRotar = false;
-                                }
-                                // choque contra otro 1 que no pertenece a la pieza actual
-                                else if (tablero[tableroI][tableroJ] == 1 &&
-                                         !(tableroI >= minI && tableroI <= maxI &&
-                                           tableroJ >= minJ && tableroJ <= maxJ)) {
-                                    puedeRotar = false;
-                                }
-                            }
-                        }
-                    }
-
-                    // 5. Aplicar rotación solo si es válida
-                    if (puedeRotar) {
-                        for (int i = 0; i < anchoPieza; i++) {
-                            for (int j = 0; j < altoPieza; j++) {
-                                if (rotada[i][j] == 1) {
-                                    int ti = minI + i;
-                                    int tj = minJ + j;
-                                    if (ti >= 0 && ti < altoTablero && tj >= 0 && tj < columnasTablero)
-                                        nuevoTablero[ti][tj] = 1;
-                                }
-                            }
-                        }
-                    } else {
-                        // si no puede rotar, se deja igual
-                        for (int i = 0; i < altoTablero; i++) {
-                            for (int j = 0; j < columnasTablero; j++) {
-                                if (tablero[i][j] == 1) {
-                                    nuevoTablero[i][j] = 1;
-                                }
-                            }
-                        }
-                    }
-
-                    // Liberar memoria temporal
-                    for (int i = 0; i < altoPieza; i++) delete[] pieza[i];
-                    delete[] pieza;
-                    for (int i = 0; i < anchoPieza; i++) delete[] rotada[i];
-                    delete[] rotada;
-
-                } else {
-                    // si no puede moverse, se queda en el mismo sitio
-                    nuevoTablero[i][j] = 1;
+    // ── ACCION 4: ROTAR ─────────────────────────────────────────────
+    if (accion == 4) {
+        int minI = altoTablero, maxI = -1, minJ = columnasTablero, maxJ = -1;
+        for (int i = 0; i < altoTablero; i++)
+            for (int j = 0; j < columnasTablero; j++)
+                if (tablero[i][j] == 1) {
+                    if (i < minI) minI = i;
+                    if (i > maxI) maxI = i;
+                    if (j < minJ) minJ = j;
+                    if (j > maxJ) maxJ = j;
                 }
-            }
+
+        int altoPieza  = maxI - minI + 1;
+        int anchoPieza = maxJ - minJ + 1;
+
+        int** pieza = new int*[altoPieza];
+        for (int i = 0; i < altoPieza; i++) {
+            pieza[i] = new int[anchoPieza];
+            for (int j = 0; j < anchoPieza; j++)
+                pieza[i][j] = tablero[minI + i][minJ + j];
         }
+
+        int** rotada = new int*[anchoPieza];
+        for (int i = 0; i < anchoPieza; i++) {
+            rotada[i] = new int[altoPieza];
+            for (int j = 0; j < altoPieza; j++)
+                rotada[i][j] = pieza[altoPieza - 1 - j][i];
+        }
+
+        int centroI = (minI + maxI) / 2;
+        int centroJ = (minJ + maxJ) / 2;
+        int offsetI = centroI - (anchoPieza - 1) / 2;
+        int offsetJ = centroJ - (altoPieza - 1) / 2;
+
+        bool puedeRotar = true;
+        for (int i = 0; i < anchoPieza && puedeRotar; i++)
+            for (int j = 0; j < altoPieza && puedeRotar; j++)
+                if (rotada[i][j] == 1) {
+                    int ti = offsetI + i, tj = offsetJ + j;
+                    if (ti < 0 || ti >= altoTablero || tj < 0 || tj >= columnasTablero)
+                        puedeRotar = false;
+                    else if (tablero[ti][tj] == 3)
+                        puedeRotar = false;
+                    else if (copia[ti][tj] == 1)
+                        puedeRotar = false;
+                }
+
+        if (puedeRotar) {
+            for (int i = 0; i < anchoPieza; i++)
+                for (int j = 0; j < altoPieza; j++)
+                    if (rotada[i][j] == 1) {
+                        int ti = offsetI + i, tj = offsetJ + j;
+                        if (ti >= 0 && ti < altoTablero && tj >= 0 && tj < columnasTablero)
+                            nuevoTablero[ti][tj] = 1;
+                    }
+        } else {
+            for (int i = 0; i < altoTablero; i++)
+                for (int j = 0; j < columnasTablero; j++)
+                    if (tablero[i][j] == 1)
+                        nuevoTablero[i][j] = 1;
+        }
+        for (int i = 0; i < altoPieza;  i++) delete[] pieza[i];
+        delete[] pieza;
+        for (int i = 0; i < anchoPieza; i++) delete[] rotada[i];
+        delete[] rotada;
+
+        for (int i = 0; i < altoTablero; i++) delete[] tablero[i];
+        delete[] tablero;
+        return nuevoTablero;
     }
 
-    // Liberar el tablero anterior
-    for (int i = 0; i < altoTablero; i++) {
-        delete[] tablero[i];
-    }
+    // ── ACCIONES 1 y 2: IZQUIERDA / DERECHA ────────────────────────
+    bool puedeMover = true;
+
+    if (accion == 1)
+        for (int i = 0; i < altoTablero; i++)
+            for (int j = 0; j < columnasTablero; j++)
+                if (tablero[i][j] == 1) {
+                    if (tablero[i][j-1] == 3) puedeMover = false;
+                    else if (copia[i][j-1] == 1) puedeMover = false;
+                }
+
+    if (accion == 2)
+        for (int i = 0; i < altoTablero; i++)
+            for (int j = 0; j < columnasTablero; j++)
+                if (tablero[i][j] == 1) {
+                    if (tablero[i][j+1] == 3) puedeMover = false;
+                    else if (copia[i][j+1] == 1) puedeMover = false;
+                }
+
+    for (int i = 0; i < altoTablero; i++)
+        for (int j = 0; j < columnasTablero; j++)
+            if (tablero[i][j] == 1) {
+                if      (accion == 1 && puedeMover) nuevoTablero[i][j-1] = 1;
+                else if (accion == 2 && puedeMover) nuevoTablero[i][j+1] = 1;
+                else                                nuevoTablero[i][j]   = 1;
+            }
+
+    for (int i = 0; i < altoTablero; i++) delete[] tablero[i];
     delete[] tablero;
-
     return nuevoTablero;
 }
 

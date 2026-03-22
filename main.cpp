@@ -71,19 +71,19 @@ int main() {
         switch (accion) {
         case 1:
             // mover izquierda
-            matriz=moverPieza(matriz, alto, ancho, 1);
+            matriz=moverPieza(matriz, copiaMatriz, alto, ancho, 1);
             break;
         case 2:
             // mover derecha
-            matriz=moverPieza(matriz, alto, ancho, 2);
+            matriz=moverPieza(matriz, copiaMatriz, alto, ancho, 2);
             break;
         case 3:
             // mover abajo
-            matriz=moverPieza(matriz, alto, ancho, 3);
+            matriz=moverPieza(matriz, copiaMatriz, alto, ancho, 3);
             break;
         case 4:
             // reservado para futura acción
-            matriz=moverPieza(matriz, alto, ancho, 4);
+            matriz=moverPieza(matriz, copiaMatriz, alto, ancho, 4);
             break;
         default:
             // acción no reconocida
@@ -93,7 +93,6 @@ int main() {
 
 
         if(!puedeBajar(matriz, copiaMatriz, alto, ancho + 2)){
-            cout<<"hola"<<endl;
 
             for (int i = 0; i < alto; i++)
                 for (int j = 0; j < ancho + 2; j++)
